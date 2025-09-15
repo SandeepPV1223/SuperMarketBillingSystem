@@ -1,0 +1,54 @@
+<html>
+<head>
+<title>Supermarket Billing System</title>
+<script src="angular.min.js"></script>
+</head>
+<body ng-app="billingApp" ng-controller="BillingController">
+<center>
+<h1>Supermarket Billing System</h1>
+<p><input type="text" ng-model="newProduct.name" placeholder="Enter Name of the Product"></p>
+<p><input type="number" ng-model="newProduct.price" placeholder="Enter Price of Product" min="1"></p>
+<p><input type="number" ng-model="newProduct.qty" placeholder="Enter Quantity" min="1"></p>
+<p><button ng-click="addToCart()">Add to Cart</button></p>
+<h2>Cart</h2>
+<table ng-if="cart.length > 0">
+<tr>
+<th>Product</th>
+<th>Price</th>
+<th>Quantity</th>
+<th>Total</th>
+<th>Action</th>
+</tr>
+<tr ng-repeat="item in cart track by $index">
+<td>{{$index + 1}}</td>
+<td>{{item.name}}</td>
+<td>{{item.price | currency:"₹"}}</td>
+<td><input type="number" ng-model="item.qty"  ng-change="updateTotal()"></td>
+<td>{{item.price * item.qty | currency:"₹"}}</td>
+<td><button class="remove-btn" ng-click="removeFromCart($index)">Remove</button></td>
+</tr>
+</table>
+<p ng-if="cart.length === 0">Cart is empty.</p>
+<p class="total">Grand Total: {{getGrandTotal() | currency:"₹"}}</p>
+<button class="print-btn" ng-if="cart.length > 0" onclick="window.print()">Print Bill</button>
+<script>
+angular.module("billingApp", []).controller("BillingController", function($scope) {
+$scope.addToCart = function() {
+if ($scope.newProduct.name && $scope.newProduct.price > 0 && $scope.newProduct.qty > 0) {
+$scope.cart.push({name: $scope.newProduct.name, price: $scope.newProduct.price, qty: parseInt($scope.newProduct.qty)});
+$scope.newProduct = {name: "", price: null, qty: 1};
+}
+};
+$scope.cart = [];
+$scope.newProduct = {name: "", price: null, qty: 1};
+$scope.removeFromCart = function(index) {
+$scope.cart.splice(index, 1);
+};
+$scope.getGrandTotal = function() {
+return $scope.cart.reduce((total, item) => total + (item.price * item.qty), 0);
+};
+$scope.updateTotal = function() {};
+});
+</script>
+</body>
+</html>
